@@ -22,5 +22,3 @@ for filename in os.listdir("./cogs"):
 		bot.load_extension(f"cogs.{filename[:-3]}")
 
 bot.run('OTcwMzI5MjUyNzMxOTUzMjEz.Ym6XiQ.D6JIgOS56N1nfIdFAvqJXxgh6FE')
-
-# OTcwMzI5MjUyNzMxOTUzMjEz.Ym6XiQ.D6JIgOS56N1nfIdFAvqJXxgh6FE
