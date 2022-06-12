@@ -1,0 +1,153 @@
+import discord
+from discord.ext import commands
+from main import embed_color, hashtag
+
+class utility(commands.Cog):
+  def __init__(self, bot):
+      self.bot = bot
+
+  @commands.command(help="Shows you the bot latency!", description="Use this to see the bot latency!")
+  @commands.cooldown(1, 3, commands.BucketType.user)
+  async def ping(self, ctx):
+    embed=discord.Embed(title="Pong!", description="Here is the bot latency!", color=embed_color)
+    embed.add_field(name="Bot Latency:", value=f"`{round(self.bot.latency * 1000)}ms`")
+    embed.set_footer(text=f"Requested by {ctx.author}") 
+    embed.set_author(name=hashtag)
+    print(f"{ctx.author} used the ping command | {ctx.channel}")
+    await ctx.message.reply(embed=embed)
+
+  @commands.command(aliases=["si"])
+  @commands.cooldown(1, 3, commands.BucketType.user)
+  async def serverinfo(self, ctx):
+    embed = discord.Embed(title="Server Info", description=f"{ctx.guild.name}", color=embed_color)
+    embed.add_field(name="Owner", value=f'`{ctx.guild.owner}`', inline=False)
+    embed.add_field(name="Channels", value=f'`{len(ctx.guild.channels)}`', inline=False)
+    embed.add_field(name="Roles", value=f'`{len(ctx.guild.roles)}`', inline=False)
+    embed.add_field(name="Server Created", value=f'`{ctx.guild.created_at.strftime("%a, %d %B %Y, %I:%M %p")}`', inline=False)
+    embed.add_field(name="Membercount", value=f'`{len(ctx.guild.members)}`', inline=False)
+    embed.set_thumbnail(url=ctx.guild.icon.url)
+    embed.set_footer(text=hashtag)
+    print(f"{ctx.author} used the serverinfo command | {ctx.channel}")
+    await ctx.message.reply(embed=embed)
+
+  @commands.command(aliases=['mc'])
+  @commands.cooldown(1, 3, commands.BucketType.user)
+  async def membercount(self, ctx):
+    embed=discord.Embed(title="Membercount", description="Here is the amount of members in this server!", color=embed_color)
+    embed.add_field(name="Count:", value=f"`{len(ctx.guild.members)}`")
+    embed.set_thumbnail(url=ctx.guild.icon.url)
+    embed.set_footer(text=hashtag)
+    print(f"{ctx.author} used the membercount command | {ctx.channel}")
+    await ctx.message.reply(embed=embed)
+
+
+  @commands.command(aliases=['whois', 'ui'])
+  @commands.cooldown(1, 3, commands.BucketType.user)
+  async def userinfo(self, ctx, *, user: discord.Member = None):
+    if user is None:
+      user = ctx.author
+      date_format = "%a, %d %b %Y %I:%M %p"
+      embed = discord.Embed(description=f"Here is information on `{user.name}#{user.discriminator}`!", color=embed_color)
+      embed.add_field(name="User:", value=ctx.author)
+      embed.add_field(name="Joined:", value=user.joined_at.strftime(date_format))
+      embed.add_field(name="User ID:", value=f'{user.id}')
+      embed.add_field(name="Registered:", value=user.created_at.strftime(date_format))
+      embed.set_author(name=hashtag)
+      embed.set_footer(text=f"Requested by {ctx.author}")
+      embed.set_thumbnail(url=user.avatar.url)
+
+      if len(user.roles) > 1:
+        role_string = ' '.join([r.mention for r in user.roles][1:])
+      embed.add_field(name="Roles [{}]".format(len(user.roles) - 1),
+			              value=role_string,
+			              inline=False)
+      perm_string = ', '.join([
+		    str(p[0]).replace("_", " ").title() for p in user.guild_permissions
+		    if p[1]])
+      embed.add_field(name="Guild Permissions:", value=perm_string, inline=False)
+      embed.set_footer(text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}')
+      print(f"{ctx.author} used the userinfo command | {ctx.channel}")
+      await ctx.message.reply(embed=embed)
+    else:
+      date_format = "%a, %d %b %Y %I:%M %p"
+      embed = discord.Embed(description=f"Here is information on `{user.name}#{user.discriminator}`!", color=embed_color)
+      embed.set_author(name=hashtag)
+      embed.set_footer(text=f"Requested by {ctx.author}")
+      embed.set_thumbnail(url=user.avatar.url)
+      embed.add_field(name="Joined:", value=user.joined_at.strftime(date_format))
+      embed.add_field(name="User ID:", value=f'{user.id}')
+      embed.add_field(name="Registered:", value=user.created_at.strftime(date_format))
+
+      if len(user.roles) > 1:
+        role_string = ' '.join([r.mention for r in user.roles][1:])
+      embed.add_field(name="Roles [{}]".format(len(user.roles) - 1),
+			              value=role_string,
+			              inline=False)
+      perm_string = ', '.join([
+		    str(p[0]).replace("_", " ").title() for p in user.guild_permissions
+		    if p[1]])
+      embed.add_field(name="Guild Permissions:", value=perm_string, inline=False)
+      embed.set_footer(text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}')
+      print(f"{ctx.author} used the userinfo command | {ctx.channel}")
+      await ctx.message.reply(embed=embed)
+
+  @commands.command()
+  @commands.cooldown(1, 10, commands.BucketType.user)
+  async def bug(self, ctx, *, message=None):
+    if message == None:
+            await ctx.message.reply("Missing Required Arguments!\nUse this command like this, `v!bug (Bug)`!")
+    else:
+      await ctx.message.reply("Bug Sent! Please wait for this to be reviewed!")
+      user = await self.bot.fetch_user("852423298481651743")
+      embed2 = discord.Embed(title=f"Bug reported!", description=f"Bug = `{message}`\n User: `{ctx.author.name}#{ctx.author.discriminator}`\n User ID: `{ctx.author.id}`", color=embed_color)
+      embed2.set_author(name="New Bug!")
+      print(f"{ctx.author} used the bug command | {ctx.channel}")
+      await user.send(embed=embed2)
+
+  @commands.command()
+  @commands.cooldown(1, 10, commands.BucketType.user)
+  async def suggest(self, ctx, *, message=None):
+    if message == None:
+          await ctx.message.reply("Missing Required Arguments!\nUse this command like this, `v!suggest (Suggestion)`!")
+    else:
+      await ctx.message.reply("Suggestion Sent! Please wait for this to be reviewed!")
+      user = await self.bot.fetch_user("852423298481651743")
+      embed2 = discord.Embed(title=f"Suggestion Suggested!",description=f"Suggestion = `{message}`\n User: `{ctx.author.name}#{ctx.author.discriminator}`\n User ID: `{ctx.author.id}`", color=embed_color)
+      embed2.set_author(name="New Suggestion!")
+      print(f"{ctx.author} used the suggest command | {ctx.channel}")
+      await user.send(embed=embed2)
+
+  @commands.command(name="av")
+  async def avatar(self, ctx, member : discord.Member = None):
+      if member == None:
+        member = ctx.author
+        memberAvatar = member.avatar.url
+        embed = discord.Embed(title = f"{member.name}'s Avatar", color=discord.Color.random())
+        embed.set_image(url = memberAvatar)
+        embed.set_author(name=hashtag)
+        embed.set_footer(text=f"Requested By {ctx.author}")
+        await ctx.message.reply(embed=embed)
+        print(f"{ctx.author} used the avatar command | {ctx.channel}")
+      else:
+        memberAvatar = member.avatar.url
+        embed = discord.Embed(title = f"{member.name}'s Avatar", color=discord.Color.random())
+        embed.set_image(url = memberAvatar)
+        embed.set_author(name=hashtag)
+        embed.set_footer(text=f"Requested By {ctx.author}")
+        print(f"{ctx.author} used the avatar command | {ctx.channel}")
+        await ctx.message.reply(embed=embed)
+
+  @commands.command(aliases=['announce'])
+  @commands.has_permissions(administrator=True)
+  async def say(self, ctx, *, message=None):
+    if message == None:
+      embed = discord.Embed(title="Error!", description="Missing Arguments!")
+      embed.add_field(name="You are missing required arguments!", value="Specify what you want me to say...")
+      await ctx.message.reply(embed=embed, delete_after = 2)
+    else:
+      await ctx.message.delete()
+      print(f"{ctx.author} used the say command | {ctx.channel}")
+      await ctx.send(message)
+
+def setup(bot):
+  bot.add_cog(utility(bot))
